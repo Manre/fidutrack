@@ -1,8 +1,7 @@
-import requests
-from requests.models import Response as RequestsResponse
 from datetime import datetime
 
 from clients.google_sheets import GoogleSheets
+from clients.http import HTTPClient
 from models import Fund, FundProfitability, ProcessedResponse
 
 FIDUCUENTA_FUND_NAME = "Fiducuenta"
@@ -14,12 +13,7 @@ AVAILABLE_FUNDS = {
     PLAN_SEMILLA_FUND_NAME: "800227622",
 }
 google_sheets_client = GoogleSheets(spreadsheet_id="1bgrEkDuB6LBeELjVgGOqpUZ0aJuNLOVu1zUcA64bucI")
-
-
-def call_endpoint(url) -> RequestsResponse:
-    response = requests.get(url)
-
-    return response
+http_client = HTTPClient()
 
 
 def remove_percentage(value) -> str:
@@ -95,9 +89,7 @@ def get_fund_profitability(fund_name: str):
         f"buscarInformacionFondo/{fund_identification}"
     )
 
-    response = call_endpoint(url=url)
-
-    json_response = response.json()
+    _, json_response = http_client.get(url=url)
 
     processed_response = process_response(response=json_response)
 
