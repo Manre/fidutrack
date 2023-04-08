@@ -23,3 +23,9 @@ class FundProfitability:
     last_year_profitability: str
     last_two_years_profitability: str
     last_three_years_profitability: str
+
+
+@dataclass
+class ProcessedResponse:
+    fund: Fund
+    fund_profitability: FundProfitability

@@ -1,6 +1,8 @@
 import requests
+from requests.models import Response as RequestsResponse
 
-from models import Fund, FundProfitability
+from clients.google_sheets import GoogleSheets
+from models import Fund, FundProfitability, ProcessedResponse
 
 FIDUCUENTA_FUND_NAME = "Fiducuenta"
 PLAN_SEMILLA_FUND_NAME = "Plan Semilla"
@@ -10,9 +12,10 @@ AVAILABLE_FUNDS = {
     FIDUCUENTA_FUND_NAME: "800180687",
     PLAN_SEMILLA_FUND_NAME: "800227622",
 }
+google_sheets_client = GoogleSheets(spreadsheet_id="1bgrEkDuB6LBeELjVgGOqpUZ0aJuNLOVu1zUcA64bucI")
 
 
-def call_endpoint(url) -> str:
+def call_endpoint(url) -> RequestsResponse:
     response = requests.get(url)
 
     return response
@@ -36,7 +39,7 @@ def clean_data(data):
     return data
 
 
-def process_response(response):
+def process_response(response) -> ProcessedResponse:
     fund = Fund(
         nit=response["nit"],
         name=response["nombre"],
@@ -61,11 +64,30 @@ def process_response(response):
         last_three_years_profitability=profitability_information["ultimos3Anios"],
     )
 
-    print(fund)
-    print(fund_profitability)
+    return ProcessedResponse(fund=fund, fund_profitability=fund_profitability)
 
 
-def get_fund_profitability(fund_identification):
+def save_response(sheet_name: str, processed_response: ProcessedResponse):
+    fund_profitability = processed_response.fund_profitability
+    fund = processed_response.fund
+
+    values = [
+        fund.closing_date,
+        fund_profitability.weekly_profitability,
+        fund_profitability.monthly_profitability,
+        fund_profitability.semesterly_profitability,
+        fund_profitability.year_to_date_profitability,
+        fund_profitability.last_year_profitability,
+        fund_profitability.last_two_years_profitability,
+        fund_profitability.last_three_years_profitability,
+    ]
+
+    google_sheets_client.add(sheet_name=sheet_name, values=values)
+
+
+def get_fund_profitability(fund_name: str):
+    fund_identification = AVAILABLE_FUNDS[fund_name]
+
     url = (
         "https://www.bancolombia.com/consultarFondosInversion/rest/servicio/"
         f"buscarInformacionFondo/{fund_identification}"
@@ -75,11 +97,14 @@ def get_fund_profitability(fund_identification):
 
     json_response = response.json()
 
-    process_response(response=json_response)
+    processed_response = process_response(response=json_response)
+
+    save_response(sheet_name=fund_name, processed_response=processed_response)
 
 
 def main():
-    get_fund_profitability(fund_identification=AVAILABLE_FUNDS[FIDUCUENTA_FUND_NAME])
+    for fund_name in AVAILABLE_FUNDS.keys():
+        get_fund_profitability(fund_name=fund_name)
 
 
 if __name__ == '__main__':
