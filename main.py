@@ -1,5 +1,6 @@
 import requests
 from requests.models import Response as RequestsResponse
+from datetime import datetime
 
 from clients.google_sheets import GoogleSheets
 from models import Fund, FundProfitability, ProcessedResponse
@@ -72,6 +73,7 @@ def save_response(sheet_name: str, processed_response: ProcessedResponse):
     fund = processed_response.fund
 
     values = [
+        datetime.utcnow().isoformat(),
         fund.closing_date,
         fund_profitability.weekly_profitability,
         fund_profitability.monthly_profitability,
