@@ -22,18 +22,14 @@ class GoogleSheets(BaseClient):
     def authenticate(self):
         creds = None
         if os.path.exists('token.json'):
-            print('token.json')
             creds = Credentials.from_authorized_user_file('token.json', self.SCOPES)
         if not creds or not creds.valid:
-            print('not creds or not creds.valid')
             if creds and creds.expired and creds.refresh_token:
                 print('if creds...')
                 creds.refresh(Request())
             else:
-                print('else...')
                 flow = InstalledAppFlow.from_client_secrets_file('credentials.json', self.SCOPES)
                 creds = flow.run_local_server(port=0)
-            print('file write...')
             with open('token.json', 'w') as token:
                 token.write(creds.to_json())
 
