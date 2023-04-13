@@ -5,3 +5,9 @@ micros:
     src: ./
     engine: python3.9
     primary: true
+    actions:
+      - id: "cleanup"
+        name: "Clean Up"
+        description: "Cleans up unused data"
+        trigger: "schedule"
+        default_interval: "0 13 * * *"
