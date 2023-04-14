@@ -26,5 +26,5 @@ def run():
 def actions():
     data = request.get_json()
     event = data['event']
-    if event['id'] == 'cleanup':
+    if event['id'] == 'scrape_all':
         execute()

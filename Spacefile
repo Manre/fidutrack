@@ -6,8 +6,8 @@ micros:
     engine: python3.9
     primary: true
     actions:
-      - id: "cleanup"
-        name: "Clean Up"
-        description: "Cleans up unused data"
+      - id: "scrape_all"
+        name: "Run all the scrappers"
+        description: "Executes a list of web scrapers"
         trigger: "schedule"
-        default_interval: "0 13 * * *"
+        default_interval: "0 19 * * *"
