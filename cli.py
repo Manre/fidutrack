@@ -1,14 +1,12 @@
 from scrappers.bancolombia import BancolombiaScrapper
-
-SCRAPPERS = [
-    BancolombiaScrapper(),
-]
+from scrappers.base import ScrapperExecutor
 
 
 def execute():
-    for fund in SCRAPPERS:
-        fund.scrap()
+    executor = ScrapperExecutor()
+    executor.add_task(BancolombiaScrapper())
+    executor.execute_all()
 
-#
-# if __name__ == '__main__':
-#     run()
+
+if __name__ == '__main__':
+    execute()

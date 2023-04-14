@@ -3,7 +3,7 @@ from datetime import datetime
 from clients.google_sheets import GoogleSheets
 from clients.http import HTTPClient
 from models import Fund, FundProfitability, ProcessedResponse
-from scrappers.base import BaseScrapper
+from scrappers.base import ScrapperTask
 
 FIDUCUENTA_FUND_NAME = "Fiducuenta"
 PLAN_SEMILLA_FUND_NAME = "Plan Semilla"
@@ -15,7 +15,7 @@ AVAILABLE_FUNDS = {
 }
 
 
-class BancolombiaScrapper(BaseScrapper):
+class BancolombiaScrapper(ScrapperTask):
 
     def __init__(self):
         self.google_sheets_client = GoogleSheets(spreadsheet_id="1bgrEkDuB6LBeELjVgGOqpUZ0aJuNLOVu1zUcA64bucI")
@@ -36,7 +36,7 @@ class BancolombiaScrapper(BaseScrapper):
 
             self.save(sheet_name=fund_name, processed_response=processed_response)
 
-    def clean_data(self, data: dict):
+    def clean_data(self, data: dict) -> dict:
         data = {**data['dias'], **data['anios']}
         for key, value in data.items():
             value = self.remove_percentage(value=value)

@@ -1,4 +1,3 @@
-import flask
 from flask import Flask
 from flask import request
 
@@ -8,22 +7,21 @@ app = Flask(__name__)
 
 
 @app.route("/")
-def hello_world():
-    return "OK"
+def index():
+    return dict(status="invalid", message="Invalid route")
 
 
 @app.route("/status")
 def status():
-    return "OK"
+    return dict(status="success", message="Application is running")
 
 
 @app.route("/run")
 def run():
     execute()
-    return "OK"
+    return dict(status="success", message="Successful execution")
 
 
-# using flask
 @app.route('/__space/v0/actions', methods=['POST'])
 def actions():
     data = request.get_json()
