@@ -8,33 +8,34 @@ from scrappers.base import ScrapperTask
 FIDUCUENTA_FUND_NAME = "Fiducuenta"
 PLAN_SEMILLA_FUND_NAME = "Plan Semilla"
 
-# Obtained from https://www.bancolombia.com/consultarFondosInversion/rest/servicio/consultarListaFondos
-AVAILABLE_FUNDS = {
-    FIDUCUENTA_FUND_NAME: "800180687",
-    PLAN_SEMILLA_FUND_NAME: "800227622",
-}
-
 
 class BancolombiaScrapper(ScrapperTask):
 
     def __init__(self):
         self.google_sheets_client = GoogleSheets(spreadsheet_id="1bgrEkDuB6LBeELjVgGOqpUZ0aJuNLOVu1zUcA64bucI")
         self.http_client = HTTPClient()
+        # Obtained from https://www.bancolombia.com/consultarFondosInversion/rest/servicio/consultarListaFondos
+        self.available_funds = {
+            FIDUCUENTA_FUND_NAME: "800180687",
+            PLAN_SEMILLA_FUND_NAME: "800227622",
+        }
+        self.bancolombia_url = (
+            "https://www.bancolombia.com/consultarFondosInversion/rest/servicio/buscarInformacionFondo/{fund_id}"
+        )
+
+    def scrap_single_fund(self, url: str, fund_name: str):
+        _, json_response = self.http_client.get(url=url)
+
+        processed_response = self.process_response(response=json_response)
+
+        self.save(sheet_name=fund_name, processed_response=processed_response)
 
     def scrap(self):
-        for fund_name in AVAILABLE_FUNDS.keys():
-            fund_identification = AVAILABLE_FUNDS[fund_name]
+        for fund_name in self.available_funds.keys():
+            fund_identification = self.available_funds[fund_name]
+            url = self.bancolombia_url.format(fund_id=fund_identification)
 
-            url = (
-                "https://www.bancolombia.com/consultarFondosInversion/rest/servicio/"
-                f"buscarInformacionFondo/{fund_identification}"
-            )
-
-            _, json_response = self.http_client.get(url=url)
-
-            processed_response = self.process_response(response=json_response)
-
-            self.save(sheet_name=fund_name, processed_response=processed_response)
+            self.scrap_single_fund(url=url, fund_name=fund_name)
 
     def clean_data(self, data: dict) -> dict:
         data = {**data['dias'], **data['anios']}
