@@ -7,6 +7,7 @@ from scrappers.base import ScrapperTask
 
 FIDUCUENTA_FUND_NAME = "Fiducuenta"
 PLAN_SEMILLA_FUND_NAME = "Plan Semilla"
+FIDURENTA_FUND_NAME = "Fidurenta"
 
 
 class BancolombiaScrapper(ScrapperTask):
@@ -18,6 +19,7 @@ class BancolombiaScrapper(ScrapperTask):
         self.available_funds = {
             FIDUCUENTA_FUND_NAME: "800180687",
             PLAN_SEMILLA_FUND_NAME: "800227622",
+            FIDURENTA_FUND_NAME: "800244627",
         }
         self.bancolombia_url = (
             "https://www.bancolombia.com/consultarFondosInversion/rest/servicio/buscarInformacionFondo/{fund_id}"
@@ -60,6 +62,7 @@ class BancolombiaScrapper(ScrapperTask):
             fund_profitability.last_year_profitability,
             fund_profitability.last_two_years_profitability,
             fund_profitability.last_three_years_profitability,
+            fund.unit_value,
         ]
 
         self.google_sheets_client.add(sheet_name=sheet_name, values=values)

@@ -16,4 +16,4 @@ class TestBancolombiaScrapper:
 
         bancolombia_scrapper.scrap()
 
-        assert scrap_single_fund_mock.call_count == 2
+        assert scrap_single_fund_mock.call_count == 3
