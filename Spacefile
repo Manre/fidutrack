@@ -10,4 +10,4 @@ micros:
         name: "Run all the scrappers"
         description: "Executes a list of web scrapers"
         trigger: "schedule"
-        default_interval: "0 0 * * *"
+        default_interval: "30 23 * * *"
