@@ -1,0 +1,10 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    restart: unless-stopped
+    environment:
+      - GOOGLE_CREDENTIALS_PATH=/app/credentials/prod.json
