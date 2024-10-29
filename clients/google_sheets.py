@@ -1,6 +1,7 @@
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+import os
 
 from clients.base import BaseClient
 
@@ -16,7 +17,8 @@ class GoogleSheets(BaseClient):
         self.spreadsheet_id = spreadsheet_id
 
     def authenticate(self):
-        creds = Credentials.from_service_account_file('credentials/prod.json', scopes=self.SCOPES)
+        google_credentials_path = os.environ.get('GOOGLE_CREDENTIALS_PATH', 'credentials/prod.json')
+        creds = Credentials.from_service_account_file(google_credentials_path, scopes=self.SCOPES)
         self.service = build('sheets', 'v4', credentials=creds)
 
     def add(
